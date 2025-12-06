@@ -150,5 +150,53 @@ def can_generate_string(fileName, w):
     return dfs([start_variable], 0)
 
 
-# def can_it_work_under_1_minute():
-#     return True
+def can_it_work_under_1_minute(fileName, length):
+    """
+    Part 3:
+    Given a CNF grammar file and a string length,
+    return True if the brute force algorithm from Part 2
+    is definitely safe to run (rough estimate).
+    """
+
+    # Read the grammar
+    rules = parse_grammar(fileName)
+
+    # Build productions: variable -> list of right hand sides
+    productions = {}
+    for lhs, rhs_full in rules:
+        alts = rhs_full.split("|")
+        if lhs not in productions:
+            productions[lhs] = []
+        for alt in alts:
+            productions[lhs].append(alt)
+
+    # Find the maximum number of alternatives any variable has
+    max_branching = 0
+    for lhs in productions:
+        count = len(productions[lhs])
+        if count > max_branching:
+            max_branching = count
+
+    # If there is at most 1 production per variable,
+    # there is basically only one path to explore.
+    if max_branching <= 1:
+        return True
+
+    # Empty string case is always cheap
+    if length == 0:
+        return True
+
+    # Worst case number of derivation steps
+    steps = 2 * length - 1
+
+    # Very rough limit for how many possibilities we are willing to explore
+    MAX_NODES = 10_000_000  # 10 million
+
+    # Estimate max_branching ** steps, but stop early if it gets too big
+    total = 1
+    for _ in range(steps):
+        total *= max_branching
+        if total > MAX_NODES:
+            return False
+
+    return True
