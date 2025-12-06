@@ -1,8 +1,8 @@
 """
 Simple test runner for CNF checker.
 Assumes:
-- is_cnf(fileName) is defined in project464.py
-- test grammar files are in testcases/test1.txt ... testcases/test10.txt
+- is_cnf(fileName) is defined in cnf.py
+- test grammar files are in testcases/test1.txt ... testcases/testN.txt
 """
 
 from cnf import is_cnf
@@ -26,7 +26,7 @@ def main():
 
     all_passed = True
 
-    for i in range(1, 12):
+    for i in sorted(expected_results.keys()):
         file_name = f"testcases/test{i}.txt"
         result = is_cnf(file_name)
         expected = expected_results[i]
